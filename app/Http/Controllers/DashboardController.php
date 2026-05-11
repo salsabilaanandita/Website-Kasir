@@ -15,67 +15,65 @@ class DashboardController extends Controller
     public function index()
     {
         $role = auth()->user()->role;
-        $totalProducts = Product::count();
-        $totalUsers = User::count();
-        $todaySales = Pembelians::whereDate('created_at', today())->count();
-        $totalPembelian = Pembelians::count();
-        // $members = Member::where('name');
-        $totalMember = Member::count();
-        $totalProduk = Product::count();
-        $totalKeuntungan = Pembelians::sum('grand_total');
-    
-        // Data pembelian harian (30 hari terakhir)
-        $dailySales = Pembelians::selectRaw('DATE(created_at) as date, COUNT(*) as total')
-            ->whereDate('created_at', '>=', now()->subDays(30))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-    
-        // Data pembelian per produk
-        $productSales = DB::table('pembelian_details')
-            ->join('products', 'pembelian_details.id_produk', '=', 'products.id')
-            ->select('products.nama_produk', DB::raw('SUM(pembelian_details.quantity) as total_sold'))
-            ->groupBy('products.nama_produk')
-            ->orderByDesc('total_sold')
-            ->get();
-    
-        // Prepare data for pie chart
-// Prepare data for pie chart
-$nama_produk = $productSales->pluck('nama_produk')->toArray();
-$total_penjualan = $productSales->sum('total_sold');
-$productPercentages = $productSales->map(function($item) use ($total_penjualan) {
-    return $total_penjualan > 0 ? round(($item->total_sold / $total_penjualan) * 100, 1) : 0;
-})->toArray();
-
-$colors = [
-    'rgba(255, 99, 132, 0.8)',
-    'rgba(54, 162, 235, 0.8)',
-    'rgba(255, 206, 86, 0.8)',
-    'rgba(75, 192, 192, 0.8)',
-    'rgba(153, 102, 255, 0.8)',
-    'rgba(255, 159, 64, 0.8)',
-    'rgba(255, 99, 255, 0.8)',
-    'rgba(54, 162, 64, 0.8)',
-    'rgba(255, 206, 192, 0.8)',
-    'rgba(75, 192, 255, 0.8)'
-];
-
-// Extract the actual sales (total sold) into a separate variable
-$actualData = $productSales->pluck('total_sold')->toArray();
-
-return view('dashboard', compact(
-    'todaySales', 
-    'dailySales', 
-    'productSales',
-    'nama_produk',
-    'productPercentages',
-    'colors',
-    'actualData',
-    'totalPembelian',
-    'totalMember',
-    'totalProduk',
-    'totalKeuntungan',
-));
+        
+        if ($role == 'admin') {
+            // Data untuk Admin (yang sudah ada)
+            $totalPembelian = Pembelians::count();
+            $totalMember = Member::count();
+            $totalProduk = Product::count();
+            $totalKeuntungan = Pembelians::sum('grand_total');
+            
+            $dailySales = Pembelians::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+                ->whereDate('created_at', '>=', now()->subDays(30))
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+            
+            $productSales = DB::table('pembelian_details')
+                ->join('products', 'pembelian_details.id_produk', '=', 'products.id')
+                ->select('products.nama_produk', DB::raw('SUM(pembelian_details.quantity) as total_sold'))
+                ->groupBy('products.nama_produk')
+                ->orderByDesc('total_sold')
+                ->get();
+            
+            $nama_produk = $productSales->pluck('nama_produk')->toArray();
+            $actualData = $productSales->pluck('total_sold')->toArray();
+            
+            $colors = [
+                'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 
+                'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)'
+            ];
+            
+            $recentPembelians = Pembelians::with('user')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+            
+            return view('dashboard', compact(
+                'totalPembelian', 'totalMember', 'totalProduk', 'totalKeuntungan',
+                'dailySales', 'productSales', 'nama_produk', 'actualData', 
+                'colors', 'recentPembelians'
+            ));
+            
+        } else {
+            // Data untuk Staff
+            $todaySales = Pembelians::whereDate('created_at', today())->count();
+            
+            // TAMBAHKAN INI UNTUK STAFF
+            $dailySales = Pembelians::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+                ->whereDate('created_at', '>=', now()->subDays(7))
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+            
+            $recentPembelians = Pembelians::with('user')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+            
+            return view('dashboard', compact('todaySales', 'dailySales', 'recentPembelians'));
+        }
     }
 
     public function getStats(Request $request)
@@ -96,7 +94,7 @@ return view('dashboard', compact(
             case 'year':
                 $query->whereYear('created_at', $now->year);
                 break;
-            default: // day
+            default:
                 $query->whereDate('created_at', today());
                 break;
         }
@@ -106,17 +104,15 @@ return view('dashboard', compact(
         $totalMember = Member::count();
         $totalProduk = Product::count();
 
-        // Data pembelian harian untuk grafik
         $dailySales = $query->selectRaw('DATE(created_at) as date, COUNT(*) as total')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
-        // Data pembelian per produk untuk pie chart
         $productSales = DB::table('pembelian_details')
-            ->join('products', 'pembelian_details.id_produk', '=', 'id_produk')
-            ->join('pembelians', 'pembelian_details.id_pembelian', '=', 'pembelians.id')
-            ->whereBetween('pembelians.created_at', [$query->getQuery()->wheres[0]['value'], $now])
+            ->join('products', 'pembelian_details.id_produk', '=', 'products.id')
+            ->join('pembelians', 'pembelian_details.pembelian_id', '=', 'pembelians.id')
+            ->whereBetween('pembelians.created_at', [$query->getQuery()->wheres[0]['value'] ?? now()->startOfDay(), $now])
             ->select('products.nama_produk', DB::raw('SUM(pembelian_details.quantity) as total_sold'))
             ->groupBy('products.nama_produk')
             ->orderByDesc('total_sold')
@@ -131,5 +127,4 @@ return view('dashboard', compact(
             'productSales' => $productSales
         ]);
     }
-
-    }
+}

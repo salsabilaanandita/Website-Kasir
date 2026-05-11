@@ -1,177 +1,144 @@
-<div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.6)">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content shadow-lg border-0">
-            <div class="modal-header bg-primary text-white py-3">
-                <h5 class="modal-title font-weight-bold">
-                    <i class="fas fa-receipt mr-2"></i>Detail Penjualan #{{ $pembelian->id }}
-                </h5>
-                <a href="{{ route('pembelian.index') }}" class="close text-white">
-                    <span aria-hidden="true">&times;</span>
+<div class="fixed inset-0 z-50 overflow-y-auto" style="background-color: rgba(0,0,0,0.6)">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-5xl mx-auto">
+            {{-- Header --}}
+            <div class="bg-blue-600 rounded-t-2xl px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-receipt text-white text-xl"></i>
+                    <h5 class="text-white font-semibold text-lg m-0">Detail Penjualan #{{ $pembelian->id }}</h5>
+                </div>
+                <a href="{{ route('pembelian.index') }}" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
                 </a>
             </div>
 
-            <div class="modal-body p-4">
-                <div class="row mb-4">
-                    <div class="col-md-6 pr-md-2">
-                        <div class="card h-100 border-0 shadow-sm rounded-lg">
-                            <div class="card-body p-4">
-                                <h6 class="card-title text-primary mb-4 d-flex align-items-center">
-                                    <i class="fas fa-user-circle fa-lg mr-2"></i>
-                                    <span>Informasi Pelanggan</span>
-                                </h6>
-                                
-                                @php
-                                    $member = \App\Models\Member::where('name', $pembelian->customer_name)->first();
-                                @endphp
-                                
-                                @if($member)
-                                    <div class="mb-3">
-                                        <span class="badge badge-success px-3 py-2">
-                                            <i class="fas fa-star mr-1"></i> Member
-                                        </span>
-                                    </div>
-                                    <div class="info-group mb-2">
-                                        <label class="text-muted small mb-1">Nama Pelanggan</label>
-                                        <p class="font-weight-bold mb-2">{{ $pembelian->customer_name }}</p>
-                                    </div>
-                                    <div class="info-group mb-2">
-                                        <label class="text-muted small mb-1">Nomor Telepon</label>
-                                        <p class="font-weight-bold mb-2">{{ $member->phone_number }}</p>
-                                    </div>
-                                    <div class="info-group mb-2">
-                                        <label class="text-muted small mb-1">Total Poin</label>
-                                        <p class="mb-2">
-                                            <span class="badge badge-info px-3 py-2">
-                                                <i class="fas fa-award mr-1"></i> {{ $member->points }} Poin
-                                            </span>
-                                        </p>
-                                    </div>
-                                    <div class="info-group">
-                                        <label class="text-muted small mb-1">Member Sejak</label>
-                                        <p class="text-primary mb-0">
-                                            {{ \Carbon\Carbon::parse($member->member_since)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y') }}
-                                        </p>
-                                    </div>
-                                @else
-                                    <div class="mb-3">
-                                        <span class="badge badge-secondary px-3 py-2">
-                                            <i class="fas fa-user mr-1"></i> Non-Member
-                                        </span>
-                                    </div>
-                                    <div class="info-group mb-2">
-                                        <label class="text-muted small mb-1">Nama Pelanggan</label>
-                                        <p class="font-weight-bold mb-0">{{ $pembelian->customer_name ?? '-' }}</p>
-                                    </div>
-                                @endif
-                            </div>
+            {{-- Body --}}
+            <div class="p-6">
+                {{-- Info Grid --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {{-- Informasi Pelanggan --}}
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-user-circle text-blue-500 text-lg"></i>
+                            <h6 class="font-semibold text-gray-800">Informasi Pelanggan</h6>
                         </div>
+                        
+                        @php
+                            $member = \App\Models\Member::where('name', $pembelian->customer_name)->first();
+                        @endphp
+                        
+                        @if($member)
+                            <div class="mb-3">
+                                <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">
+                                    <i class="fas fa-star text-xs"></i> Member
+                                </span>
+                            </div>
+                            <div class="space-y-2">
+                                <div>
+                                    <p class="text-gray-400 text-xs">Nama Pelanggan</p>
+                                    <p class="font-semibold text-gray-800">{{ $pembelian->customer_name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-xs">Nomor Telepon</p>
+                                    <p class="font-semibold text-gray-800">{{ $member->phone_number }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-xs">Total Poin</p>
+                                    <p class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-1 rounded-full">
+                                        <i class="fas fa-award"></i> {{ $member->points }} Poin
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-xs">Member Sejak</p>
+                                    <p class="text-blue-600 text-sm">{{ \Carbon\Carbon::parse($member->member_since)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y') }}</p>
+                                </div>
+                            </div>
+                        @else
+                            <div class="mb-3">
+                                <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded-full">
+                                    <i class="fas fa-user text-xs"></i> Non-Member
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-xs">Nama Pelanggan</p>
+                                <p class="font-semibold text-gray-800">{{ $pembelian->customer_name ?? '-' }}</p>
+                            </div>
+                        @endif
                     </div>
 
-                    <div class="col-md-6 pl-md-2">
-                        <div class="card h-100 border-0 shadow-sm rounded-lg">
-                            <div class="card-body p-4">
-                                <h6 class="card-title text-primary mb-4 d-flex align-items-center">
-                                    <i class="fas fa-info-circle fa-lg mr-2"></i>
-                                    <span>Informasi Transaksi</span>
-                                </h6>
-                                
-                                <div class="info-group mb-3">
-                                    <label class="text-muted small mb-1">Tanggal Transaksi</label>
-                                    <p class="font-weight-bold mb-2">
-                                        {{ $pembelian->created_at->setTimezone('Asia/Jakarta')->translatedFormat('d F Y') }}
-                                    </p>
-                                </div>
-                                
-                                <div class="info-group mb-3">
-                                    <label class="text-muted small mb-1">Waktu Transaksi</label>
-                                    <p class="font-weight-bold mb-2">
-                                        {{ $pembelian->created_at->format('H:i') }} WIB
-                                    </p>
-                                </div>
-                                
-                                <div class="info-group">
-                                    <label class="text-muted small mb-1">Kasir</label>
-                                    <p class="font-weight-bold mb-0">
-                                        <i class="fas fa-user-tie mr-1"></i>
-                                        {{ $pembelian->dibuat_oleh }}
-                                    </p>
-                                </div>
+                    {{-- Informasi Transaksi --}}
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg"></i>
+                            <h6 class="font-semibold text-gray-800">Informasi Transaksi</h6>
+                        </div>
+                        <div class="space-y-2">
+                            <div>
+                                <p class="text-gray-400 text-xs">Tanggal Transaksi</p>
+                                <p class="font-semibold text-gray-800">{{ $pembelian->created_at->setTimezone('Asia/Jakarta')->translatedFormat('d F Y') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-xs">Waktu Transaksi</p>
+                                <p class="font-semibold text-gray-800">{{ $pembelian->created_at->format('H:i') }} WIB</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-xs">Kasir</p>
+                                <p class="font-semibold text-gray-800">
+                                    <i class="fas fa-user-tie text-gray-400 mr-1"></i>
+                                    {{ $pembelian->dibuat_oleh }}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-lg">
-                    <div class="card-body p-0">
-                        <h6 class="card-title bg-light p-4 mb-0 text-primary d-flex align-items-center">
-                            <i class="fas fa-shopping-basket fa-lg mr-2"></i>
-                            <span>Detail Pembelian</span>
-                        </h6>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="py-3 px-4 text-left">Produk</th>
-                                        <th class="py-3 px-4 text-center" width="100">Qty</th>
-                                        <th class="py-3 px-4 text-right" width="200">Harga Satuan</th>
-                                        <th class="py-3 px-4 text-right" width="200">Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($pembelian->details as $detail)
-                                    <tr>
-                                        <td class="py-3 px-4">{{ $detail->product->nama_produk }}</td>
-                                        <td class="py-3 px-4 text-center">{{ $detail->quantity }}</td>
-                                        <td class="py-3 px-4 text-right">Rp {{ number_format($detail->product->harga, 0, ',', '.') }}</td>
-                                        <td class="py-3 px-4 text-right font-weight-bold">Rp {{ number_format($detail->total_price, 0, ',', '.') }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="bg-light">
-                                        <td colspan="3" class="py-3 px-4 text-right font-weight-bold">Total Pembelian</td>
-                                        <td class="py-3 px-4 text-right">
-                                            <span class="h5 font-weight-bold text-primary mb-0">
-                                                Rp {{ number_format($pembelian->grand_total, 0, ',', '.') }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                {{-- Detail Produk --}}
+                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-shopping-basket text-blue-500"></i>
+                            <h6 class="font-semibold text-gray-800">Detail Pembelian</h6>
                         </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr class="border-b border-gray-100">
+                                    <th class="text-left py-3 px-4 text-gray-500 text-xs font-semibold uppercase tracking-wide">Produk</th>
+                                    <th class="text-center py-3 px-4 text-gray-500 text-xs font-semibold uppercase tracking-wide w-24">Qty</th>
+                                    <th class="text-right py-3 px-4 text-gray-500 text-xs font-semibold uppercase tracking-wide w-36">Harga Satuan</th>
+                                    <th class="text-right py-3 px-4 text-gray-500 text-xs font-semibold uppercase tracking-wide w-36">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pembelian->details as $detail)
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                    <td class="py-3 px-4 text-gray-700">{{ $detail->product->nama_produk }}</td>
+                                    <td class="py-3 px-4 text-center text-gray-600">{{ $detail->quantity }}</td>
+                                    <td class="py-3 px-4 text-right text-gray-600">Rp {{ number_format($detail->product->harga, 0, ',', '.') }}</td>
+                                    <td class="py-3 px-4 text-right font-semibold text-gray-800">Rp {{ number_format($detail->total_price, 0, ',', '.') }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot class="bg-gray-50 border-t border-gray-100">
+                                <tr>
+                                    <td colspan="3" class="py-3 px-4 text-right font-semibold text-gray-700">Total Pembelian</td>
+                                    <td class="py-3 px-4 text-right">
+                                        <span class="text-blue-600 font-bold text-lg">Rp {{ number_format($pembelian->grand_total, 0, ',', '.') }}</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="modal-footer bg-light py-3">
-                <a href="{{ route('pembelian.index') }}" class="btn btn-primary px-4">
-                    <i class="fas fa-arrow-left mr-2"></i>Kembali
+            {{-- Footer --}}
+            <div class="bg-gray-50 rounded-b-2xl px-6 py-3 flex justify-end border-t border-gray-100">
+                <a href="{{ route('pembelian.index') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-lg transition-all inline-flex items-center gap-2">
+                    <i class="fas fa-arrow-left text-sm"></i> Kembali
                 </a>
             </div>
         </div>
     </div>
 </div>
-
-@push('styles')
-<style>
-    .modal-content {
-        border-radius: 0.5rem;
-    }
-    .card {
-        transition: all 0.2s ease;
-    }
-    .badge {
-        font-size: 0.9rem;
-    }
-    .info-group label {
-        color: #858796;
-    }
-    .table td, .table th {
-        vertical-align: middle;
-    }
-    .modal-backdrop {
-        opacity: 0.6;
-    }
-</style>
-@endpush

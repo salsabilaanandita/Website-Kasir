@@ -3520,7 +3520,7 @@ var core_animations = {
 
 		me.advance();
 
-		// Do we have more stuff to animate?
+		// Do we have more stafff to animate?
 		if (me.animations.length > 0) {
 			me.requestAnimationFrame();
 		}
@@ -15063,7 +15063,7 @@ var moment = createCommonjsModule(function (module, exports) {
         }
         this._config = config;
         // Lenient ordinal parsing accepts just a number in addition to
-        // number + (possibly) stuff coming from _dayOfMonthOrdinalParse.
+        // number + (possibly) stafff coming from _dayOfMonthOrdinalParse.
         // TODO: Remove "ordinalParse" fallback in next major release.
         this._dayOfMonthOrdinalParseLenient = new RegExp(
             (this._dayOfMonthOrdinalParse.source || this._ordinalParse.source) +

@@ -43,28 +43,44 @@ class ProductController extends Controller
         return view('product.edit', compact('product'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
+        $product = Product::findOrFail($id);
+        
+        $request->validate([
             'nama_produk' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
             'stok' => 'required|integer|min:0',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
-
+        
+        $oldStock = $product->stok; // Simpan stock lama untuk info
+        
+        $product->nama_produk = $request->nama_produk;
+        $product->harga = str_replace('.', '', $request->harga);
+        $product->stok = $request->stok;
+        
+        // Handle upload gambar baru
         if ($request->hasFile('img')) {
-            // Delete old image
-            if ($product->img) {
-                Storage::disk('public')->delete($product->img);
+            if ($product->img && file_exists(storage_path('app/public/' . $product->img))) {
+                unlink(storage_path('app/public/' . $product->img));
             }
-            // Store new image
-            $imagePath = $request->file('img')->store('products', 'public');
-            $validated['img'] = $imagePath;
+            
+            $file = $request->file('img');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/products', $filename);
+            $product->img = 'products/' . $filename;
         }
-
-        $product->update($validated);
-
-        return redirect()->route('products.index')->with('success', 'Product updated successfully!');
+        
+        $product->save();
+        
+        // Pesan sukses dengan info perubahan stock
+        $message = "Product updated successfully! ";
+        if ($oldStock != $request->stok) {
+            $message .= "Stock changed from {$oldStock} to {$request->stok}.";
+        }
+        
+        return redirect()->route('products.index')->with('success', $message);
     }
 
     public function updateStock(Request $request, Product $product)

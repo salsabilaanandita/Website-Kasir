@@ -17,34 +17,41 @@ class Pembelians extends Model
         'dibuat_oleh'
     ];
 
+    /**
+     * Relasi ke tabel detail (One to Many)
+     */
     public function details()
     {
+        // Pakai 'pembelian_id' sesuai hasil tinker di tabel pembelian_details
         return $this->hasMany(DetailPembelian::class, 'pembelian_id');
     }
-    // Tambahkan relasi di model Pembelian.php
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'id_produk');
-    }
-    
-    public function member()
-    {
-        return $this->belongsTo(Member::class);
-    }
-    
+
+    /**
+     * Relasi Many to Many ke Product via tabel pivot
+     */
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'pembelian_details')
-                    ->withPivot('quantity', 'subtotal');
-    }    
+        // 1. 'pembelian_details' = tabel pivot
+        // 2. 'pembelian_id' = FK model ini di pivot
+        // 3. 'id_produk' = FK model Product di pivot (Hasil Tinker)
+        return $this->belongsToMany(Product::class, 'pembelian_details', 'pembelian_id', 'id_produk')
+                    ->withPivot('quantity', 'total_price') // Pakai total_price sesuai hasil tinker
+                    ->withTimestamps();
+    }
 
+    /**
+     * Relasi ke User yang membuat transaksi
+     */
     public function user()
     {
         return $this->belongsTo(User::class, 'dibuat_oleh', 'id');
     }
 
-    public function pembelian()
+    /**
+     * Relasi ke Member (Opsional)
+     */
+    public function member()
     {
-        return $this->belongsTo(Pembelians::class);
+        return $this->belongsTo(Member::class);
     }
 }

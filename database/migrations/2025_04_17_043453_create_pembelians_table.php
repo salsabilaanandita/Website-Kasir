@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('invoice_number');
             $table->string('customer_name');
             $table->decimal('grand_total', 10, 2);
-            $table->datetimes('tanggal');
+            $table->dateTime('tanggal');
             $table->string('dibuat_oleh');
             $table->timestamps();
         });

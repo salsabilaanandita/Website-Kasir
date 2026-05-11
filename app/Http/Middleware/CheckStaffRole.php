@@ -10,7 +10,8 @@ class CheckStaffRole
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role === 'stuf') {
+        // GANTI 'staff' JADI 'staff' atau 'staf'
+        if (Auth::check() && (Auth::user()->role === 'staff' || Auth::user()->role === 'staf')) {
             return $next($request);
         }
 

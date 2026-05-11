@@ -3516,7 +3516,7 @@ var core_animations = {
 
 		me.advance();
 
-		// Do we have more stuff to animate?
+		// Do we have more stafff to animate?
 		if (me.animations.length > 0) {
 			me.requestAnimationFrame();
 		}

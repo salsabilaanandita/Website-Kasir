@@ -2,84 +2,116 @@
 @section('title', 'Add Product')
 
 @section('content')
-<div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Add New Product</h1>
-        <a href="{{ route('products.index') }}" class="btn btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Back to Products
+<div class="px-4 py-4">
+    {{-- Header Section --}}
+    <div class="flex flex-wrap items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Add New Product</h1>
+            <p class="text-sm text-gray-500 mt-1">Create a new product for your inventory</p>
+        </div>
+        <a href="{{ route('products.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-5 rounded-full shadow-sm transition-all inline-flex items-center gap-2">
+            <i class="fas fa-arrow-left text-sm"></i> Back to Products
         </a>
     </div>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Product Information</h6>
+    {{-- Error Alert --}}
+    @if($errors->any())
+        <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-4">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-circle mt-0.5 mr-3"></i>
+                <div>
+                    <strong class="font-semibold">Error!</strong> Please check the following:
+                    <ul class="mt-2 list-disc list-inside text-sm">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
+    @endif
+
+    {{-- Form Card --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100">
+            <h6 class="font-bold text-blue-600">
+                <i class="fas fa-plus-circle mr-2"></i>Product Information
+            </h6>
+        </div>
+        <div class="p-5">
             <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" id="productForm">
                 @csrf
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="nama_produk" class="font-weight-bold">Product Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('nama_produk') is-invalid @enderror" 
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Left Column --}}
+                    <div>
+                        {{-- Product Name --}}
+                        <div class="mb-4">
+                            <label for="nama_produk" class="font-semibold text-gray-700 block mb-2">Product Name <span class="text-red-500">*</span></label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('nama_produk') border-red-500 @enderror" 
                                 id="nama_produk" name="nama_produk" value="{{ old('nama_produk') }}" 
                                 required minlength="3" maxlength="255"
                                 placeholder="Enter product name">
                             @error('nama_produk')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="harga" class="font-weight-bold">Price <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-primary text-white">Rp</span>
-                                </div>
-                                <input type="text" class="form-control @error('harga') is-invalid @enderror" 
+                        {{-- Price --}}
+                        <div class="mb-4">
+                            <label for="harga" class="font-semibold text-gray-700 block mb-2">Price <span class="text-red-500">*</span></label>
+                            <div class="flex items-center">
+                                <span class="bg-blue-500 text-white px-3 py-2 rounded-l-xl">Rp</span>
+                                <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-r-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('harga') border-red-500 @enderror" 
                                     id="harga" name="harga" value="{{ old('harga') }}" 
                                     placeholder="0" required>
                             </div>
                             @error('harga')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stok" class="font-weight-bold">Initial Stock <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control @error('stok') is-invalid @enderror" 
+                    {{-- Right Column --}}
+                    <div>
+                        {{-- Initial Stock --}}
+                        <div class="mb-4">
+                            <label for="stok" class="font-semibold text-gray-700 block mb-2">Initial Stock <span class="text-red-500">*</span></label>
+                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('stok') border-red-500 @enderror" 
                                 id="stok" name="stok" value="{{ old('stok', 0) }}" 
                                 min="0" required placeholder="Enter initial stock">
                             @error('stok')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="img" class="font-weight-bold">Product Image <span class="text-danger">*</span></label>
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input @error('img') is-invalid @enderror" 
+                        {{-- Product Image --}}
+                        <div class="mb-4">
+                            <label for="img" class="font-semibold text-gray-700 block mb-2">Product Image <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
                                     id="img" name="img" accept="image/jpeg,image/png,image/jpg" required>
-                                <label class="custom-file-label" for="img">Choose file...</label>
-                                @error('img')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <div class="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 text-gray-500 text-sm cursor-pointer hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-cloud-upload-alt mr-2"></i> Choose file...
+                                </div>
                             </div>
-                            <small class="form-text text-muted">Accepted formats: JPG, JPEG, PNG. Max size: 2MB</small>
+                            @error('img')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                            <small class="text-gray-400 text-xs mt-1 block">Accepted formats: JPG, JPEG, PNG. Max size: 2MB</small>
                         </div>
                     </div>
                 </div>
 
-                <hr class="my-4">
+                <hr class="my-6 border-gray-200">
 
-                <div class="d-flex justify-content-end">
-                    <button type="reset" class="btn btn-secondary mr-2">
-                        <i class="fas fa-undo-alt mr-1"></i> Reset
+                {{-- Action Buttons --}}
+                <div class="flex justify-end gap-3">
+                    <button type="reset" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-5 rounded-full transition-all inline-flex items-center gap-2">
+                        <i class="fas fa-undo-alt"></i> Reset
                     </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus-circle mr-1"></i> Add Product
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-full transition-all inline-flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Add Product
                     </button>
                 </div>
             </form>
@@ -87,24 +119,12 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-    .custom-file-label::after {
-        content: "Browse";
-    }
-    .input-group-text {
-        min-width: 45px;
-    }
-    .form-control:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
-    document.getElementById('harga').addEventListener('input', function(e) {
+    // Format harga dengan separator ribuan
+    const priceInput = document.getElementById('harga');
+    
+    priceInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/[^\d]/g, '');
         if (value.length > 0) {
             value = parseInt(value, 10).toLocaleString('id-ID');
@@ -112,6 +132,7 @@
         e.target.value = value;
     });
 
+    // Validasi submit form
     document.getElementById('productForm').addEventListener('submit', function(e) {
         const priceInput = document.getElementById('harga');
         const numericValue = priceInput.value.replace(/\./g, '');
@@ -123,12 +144,22 @@
             return;
         }
         priceInput.value = numericValue;
+        
+        // Validasi file gambar
+        const fileInput = document.getElementById('img');
+        if (!fileInput.files.length) {
+            e.preventDefault();
+            alert('Please select a product image');
+            fileInput.focus();
+            return;
+        }
     });
 
+    // Update label file upload
     document.getElementById('img').addEventListener('change', function() {
         const fileName = this.files[0]?.name || 'Choose file...';
         const label = this.nextElementSibling;
-        label.textContent = fileName;
+        label.innerHTML = `<i class="fas fa-cloud-upload-alt mr-2"></i> ${fileName}`;
     });
 </script>
 @endpush

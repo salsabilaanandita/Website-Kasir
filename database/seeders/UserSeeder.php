@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             'name' => 'Staf Biasa', 
             'email' => 'staf@gmail.com', 
             'password' => Hash::make('123'),
-            'role' => 'stuf',   
+            'role' => 'staff',   
             'email_verified_at' => now(),
             'remember_token' => Str::random(10),
             ]);

@@ -42,6 +42,12 @@ class PembelianController extends Controller
         return view('pembelian.create', compact('products'));
     }
 
+    public function show($id)
+    {
+        $pembelian = Pembelians::with('details.product')->findOrFail($id);
+        return view('pembelian.show', compact('pembelian'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
