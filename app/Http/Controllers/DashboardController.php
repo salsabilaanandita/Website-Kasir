@@ -29,9 +29,9 @@ class DashboardController extends Controller
                 ->orderBy('date')
                 ->get();
             
-            $productSales = DB::table('pembelian_details')
-                ->join('products', 'pembelian_details.id_produk', '=', 'products.id')
-                ->select('products.nama_produk', DB::raw('SUM(pembelian_details.quantity) as total_sold'))
+            $productSales = DB::table('detail_pembelians')
+                ->join('products', 'detail_pembelians.product_id', '=', 'products.id')
+                ->select('products.nama_produk', DB::raw('SUM(detail_pembelians.quantity) as total_sold'))
                 ->groupBy('products.nama_produk')
                 ->orderByDesc('total_sold')
                 ->get();
@@ -109,11 +109,11 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get();
 
-        $productSales = DB::table('pembelian_details')
-            ->join('products', 'pembelian_details.id_produk', '=', 'products.id')
-            ->join('pembelians', 'pembelian_details.pembelian_id', '=', 'pembelians.id')
+        $productSales = DB::table('detail_pembelians')
+            ->join('products', 'detail_pembelians.product_id', '=', 'products.id')
+            ->join('pembelians', 'detail_pembelians.pembelian_id', '=', 'pembelians.id')
             ->whereBetween('pembelians.created_at', [$query->getQuery()->wheres[0]['value'] ?? now()->startOfDay(), $now])
-            ->select('products.nama_produk', DB::raw('SUM(pembelian_details.quantity) as total_sold'))
+            ->select('products.nama_produk', DB::raw('SUM(detail_pembelians.quantity) as total_sold'))
             ->groupBy('products.nama_produk')
             ->orderByDesc('total_sold')
             ->get();
