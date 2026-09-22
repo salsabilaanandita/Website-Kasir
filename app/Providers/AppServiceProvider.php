@@ -11,7 +11,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Sanitize database options if parsed as string from DATABASE_URL
+        $options = config('database.connections.pgsql.options');
+        if (!is_array($options)) {
+            config(['database.connections.pgsql.options' => []]);
+        }
     }
 
     /**
