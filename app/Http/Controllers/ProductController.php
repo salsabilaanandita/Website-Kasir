@@ -10,13 +10,13 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->get();
-        return view('product.index', compact('products'));
+        $products = Product::with('category')->latest()->paginate(10);
+        return view('products.index', compact('products'));
     }
 
     public function create()
     {
-        return view('product.create');
+        return view('products.create');
     }
 
     public function store(Request $request)
@@ -33,6 +33,8 @@ class ProductController extends Controller
             $validated['img'] = $imagePath;
         }
 
+
+
         Product::create($validated);
 
         return redirect()->route('products.index')->with('success', 'Product created successfully!');
@@ -40,7 +42,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('product.edit', compact('product'));
+        return view('products.edit', compact('product'));
     }
 
     public function update(Request $request, $id)

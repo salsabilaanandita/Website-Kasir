@@ -1,104 +1,440 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
-    <meta name="theme-color" content="#3B82F6">
+    <meta name="theme-color" content="#0071e3">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Kasir - @yield('title', 'Dashboard')</title>
+    <title>{{ \App\Models\Setting::get('nama_toko', 'Kasir App') }} — @yield('title', 'Dashboard')</title>
 
+    <!-- Google Fonts Inter for non-macOS fallbacks -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS for grid & dropdowns -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"Helvetica Neue"', '"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            blue: '#0071e3',
+                            'blue-hover': '#0077ed',
+                            'blue-active': '#0062c4',
+                            ink: '#1d1d1f',
+                            muted: '#86868b',
+                            border: '#d2d2d7',
+                            'border-light': '#e5e5ea',
+                            bg: '#f5f5f7',
+                            card: '#ffffff',
+                            danger: '#d70015',
+                            warning: '#ff9500',
+                            success: '#34c759'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        /* Custom scrollbar untuk sidebar agar tetap cantik */
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        /* Transition untuk mobile sidebar */
-        @media (max-width: 768px) {
-            .sidebar-mobile { transform: translateX(-100%); transition: transform 0.3s ease; }
-            .sidebar-mobile.show { transform: translateX(0); }
+        :root {
+            --apple-blue: #0071e3;
+            --apple-blue-hover: #0077ed;
+            --apple-blue-active: #0062c4;
+            --apple-ink: #1d1d1f;
+            --apple-muted: #86868b;
+            --apple-border: #d2d2d7;
+            --apple-border-light: #e5e5ea;
+            --apple-bg: #f5f5f7;
+            --apple-card: #ffffff;
+            --apple-danger: #d70015;
+            --apple-warning: #ff9500;
+            --apple-success: #34c759;
+            --apple-radius-pill: 9999px;
+            --apple-radius-lg: 16px;
+            --apple-radius-md: 12px;
+            --apple-radius-sm: 8px;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'Inter', sans-serif; 
+            background-color: var(--apple-bg);
+            color: var(--apple-ink);
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.015em;
+        }
+
+        /* Apple Component: Buttons */
+        .btn-apple-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: var(--apple-blue);
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 9999px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+        .btn-apple-primary:hover { background-color: var(--apple-blue-hover); }
+        .btn-apple-primary:active { transform: scale(0.97); background-color: var(--apple-blue-active); }
+
+        .btn-apple-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: #ffffff;
+            color: var(--apple-blue) !important;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 9999px;
+            border: 1px solid var(--apple-border);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .btn-apple-secondary:hover { border-color: var(--apple-blue); background-color: #f5f5f7; }
+        .btn-apple-secondary:active { transform: scale(0.97); }
+
+        .btn-apple-dark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: var(--apple-ink);
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .btn-apple-dark:hover { background-color: #333336; }
+        .btn-apple-dark:active { transform: scale(0.97); }
+
+        .btn-apple-ghost {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: #f5f5f7;
+            color: #424245 !important;
+            font-size: 12.5px;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--apple-border-light);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .btn-apple-ghost:hover { background-color: #e5e5ea; color: var(--apple-ink) !important; }
+        .btn-apple-ghost:active { transform: scale(0.97); }
+
+        .btn-apple-danger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: #fff2f2;
+            color: var(--apple-danger) !important;
+            font-size: 12.5px;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #ffccd0;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .btn-apple-danger:hover { background-color: var(--apple-danger); color: #ffffff !important; }
+        .btn-apple-danger:active { transform: scale(0.97); }
+
+        /* Apple Component: Card */
+        .apple-card {
+            background-color: #ffffff;
+            border: 1px solid var(--apple-border-light);
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+        }
+
+        /* Apple Component: Table */
+        .apple-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .apple-table th {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--apple-muted);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--apple-border-light);
+            background-color: #fcfcfd;
+            text-align: left;
+        }
+        .apple-table td {
+            font-size: 13px;
+            color: var(--apple-ink);
+            padding: 12px 16px;
+            border-bottom: 1px solid #f2f2f7;
+            vertical-align: middle;
+        }
+        .apple-table tr:hover td {
+            background-color: #fbfbfd;
+        }
+
+        /* Apple Component: Input */
+        .apple-input {
+            width: 100%;
+            height: 38px;
+            padding: 0 12px;
+            font-size: 13.5px;
+            font-family: inherit;
+            color: var(--apple-ink);
+            background-color: #ffffff;
+            border: 1px solid var(--apple-border);
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .apple-input:focus {
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        }
+
+        /* Apple Component: Badge */
+        .apple-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2.5px 8px;
+            border-radius: 9999px;
+            background-color: #f5f5f7;
+            color: #515154;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .apple-badge-blue { background-color: #f0f6ff; color: #0071e3; border-color: #cce0ff; }
+        .apple-badge-green { background-color: #f0fdf4; color: #16a34a; border-color: #dcfce7; }
+        .apple-badge-amber { background-color: #fffbeb; color: #d97706; border-color: #fef3c7; }
+        .apple-badge-red { background-color: #fff2f2; color: #d70015; border-color: #ffccd0; }
+
+        /* Apple Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d2d2d7; border-radius: 9999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #86868b; }
+
+        /* Mobile drawer */
+        @media (max-width: 1023px) {
+            .sidebar-drawer { 
+                transform: translateX(-100%); 
+                transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); 
+            }
+            .sidebar-drawer.show { 
+                transform: translateX(0); 
+            }
+        }
+
+        /* Dropdown Clean */
+        .dropdown-menu {
+            border: 1px solid var(--apple-border) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
         }
     </style>
+    @stack('styles')
 </head>
 
-<body class="bg-slate-50 text-slate-800">
-    <div id="wrapper" class="flex">
-        <div id="sidebarOverlay" onclick="closeSidebar()" class="fixed inset-0 bg-black/50 z-[1045] hidden"></div>
+<body class="bg-[#f5f5f7] text-[#1d1d1f] min-h-screen flex flex-col antialiased">
+    <div id="wrapper" class="flex flex-1 min-h-screen w-full relative">
+        {{-- Mobile Overlay --}}
+        <div id="sidebarOverlay" onclick="closeSidebar()" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[1045] hidden transition-opacity"></div>
 
-        <aside id="sidebar" class="sidebar-mobile fixed md:sticky top-0 left-0 h-screen w-[280px] bg-white border-r border-slate-200 z-[1050] flex flex-col custom-scrollbar overflow-y-auto shadow-sm">
+        {{-- Sidebar --}}
+        <aside id="sidebar" class="sidebar-drawer fixed lg:sticky top-0 left-0 h-screen w-[260px] bg-white border-r border-[#e5e5ea] z-[1050] flex flex-col custom-scrollbar overflow-y-auto flex-shrink-0">
             
-            <div class="h-[72px] px-6 flex items-center border-b border-slate-100 flex-shrink-0">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 no-underline group">
-                    <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-sm shadow-blue-200 transition-transform group-hover:scale-105">
-                        <i class="fas fa-bars-staggered text-lg"></i>
+            {{-- Brand Header --}}
+            <div class="h-[64px] px-5 flex items-center justify-between border-b border-[#e5e5ea] flex-shrink-0">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 no-underline">
+                    <div class="w-8 h-8 bg-[#1d1d1f] text-white rounded-lg flex items-center justify-center text-sm">
+                        <i class="fas fa-cash-register"></i>
                     </div>
-                    <span class="text-xl font-bold text-slate-800 tracking-tight">KasirApp</span>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-semibold text-[#1d1d1f] leading-tight">
+                            {{ \App\Models\Setting::get('nama_toko', 'Kasir App') }}
+                        </span>
+                        <span class="text-[11px] text-[#86868b] leading-tight capitalize">
+                            Role: {{ Auth::user()->role }}
+                        </span>
+                    </div>
                 </a>
+                <button onclick="closeSidebar()" class="lg:hidden p-1.5 text-[#86868b] hover:text-[#1d1d1f] rounded-lg">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
 
-            <nav class="flex-grow p-4 space-y-1">
-                <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Main Menu</div>
+            {{-- Navigation Menu --}}
+            <nav class="flex-grow p-3 space-y-1">
+                {{-- Quick POS Shortcut --}}
+                <div class="mb-3">
+                    <a href="{{ route('kasir.index') }}" class="btn-apple-primary w-full py-2 text-xs font-semibold">
+                        <i class="fas fa-calculator text-xs"></i>
+                        <span>Buka Kasir / POS</span>
+                    </a>
+                </div>
+
+                {{-- Group: Utama --}}
+                <div class="px-3 pt-2 pb-1 text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Utama</div>
                 
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all {{ Request::routeIs('dashboard*') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
-                    <i class="fas fa-chart-pie w-5 text-center text-lg"></i>
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('dashboard*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                    <i class="fas fa-th-large w-4 text-center text-sm {{ Request::routeIs('dashboard*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
                     <span>Dashboard</span>
                 </a>
-
-                <a href="{{ route('products.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all {{ Request::routeIs('products*') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
-                    <i class="fas fa-box w-5 text-center text-lg"></i>
-                    <span>Products</span>
+                <a href="{{ route('kasir.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('kasir.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                    <i class="fas fa-calculator w-4 text-center text-sm {{ Request::routeIs('kasir.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                    <span>Kasir / POS</span>
+                </a>
+                <a href="{{ route('penjualan.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('penjualan.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                    <i class="fas fa-receipt w-4 text-center text-sm {{ Request::routeIs('penjualan.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                    <span>Riwayat Penjualan</span>
                 </a>
 
-                <a href="{{ route('pembelian.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all {{ Request::routeIs('pembelian*') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
-                    <i class="fas fa-shopping-cart w-5 text-center text-lg"></i>
-                    <span>Transactions</span>
+                {{-- Group: Produk & Stok --}}
+                <div class="px-3 pt-4 pb-1 text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Produk</div>
+                
+                <a href="{{ route('products.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('products*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                    <i class="fas fa-box w-4 text-center text-sm {{ Request::routeIs('products*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                    <span>Produk</span>
                 </a>
 
-                @if(Auth::user()->role == 'admin')
-                    <div class="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Management</div>
-                    <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all {{ Request::routeIs('users*') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
-                        <i class="fas fa-users w-5 text-center text-lg"></i>
-                        <span>Users</span>
+                {{-- Categories, Inventory, Suppliers ONLY for Admin & Manager --}}
+                @if(in_array(Auth::user()->role, ['admin', 'manager']))
+                    <a href="{{ route('categories.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('categories.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-tags w-4 text-center text-sm {{ Request::routeIs('categories.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Kategori</span>
+                    </a>
+                    <a href="{{ route('inventory.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('inventory.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-warehouse w-4 text-center text-sm {{ Request::routeIs('inventory.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Inventory</span>
+                    </a>
+                    <a href="{{ route('suppliers.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('suppliers.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-truck w-4 text-center text-sm {{ Request::routeIs('suppliers.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Supplier</span>
                     </a>
                 @endif
 
-                <div class="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Account</div>
+                {{-- Group: Operasional --}}
+                <div class="px-3 pt-4 pb-1 text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Operasional</div>
+
+                {{-- Expenses ONLY for Admin & Manager --}}
+                @if(in_array(Auth::user()->role, ['admin', 'manager']))
+                    <a href="{{ route('expenses.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('expenses.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-money-bill-wave w-4 text-center text-sm {{ Request::routeIs('expenses.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Pengeluaran</span>
+                    </a>
+                @endif
+
+                <a href="{{ route('shifts.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('shifts.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                    <i class="fas fa-clock w-4 text-center text-sm {{ Request::routeIs('shifts.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                    <span>Shift</span>
+                </a>
+                <a href="{{ route('returns.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('returns.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                    <i class="fas fa-undo-alt w-4 text-center text-sm {{ Request::routeIs('returns.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                    <span>Return</span>
+                </a>
+
+                {{-- Laporan ONLY for Admin & Manager --}}
+                @if(in_array(Auth::user()->role, ['admin', 'manager']))
+                    <div class="px-3 pt-4 pb-1 text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Laporan</div>
+                    <a href="{{ route('reports.sales') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('reports.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-chart-line w-4 text-center text-sm {{ Request::routeIs('reports.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Laporan</span>
+                    </a>
+                @endif
+
+                {{-- Admin Menu ONLY for Admin --}}
+                @if(Auth::user()->role === 'admin')
+                    <div class="px-3 pt-4 pb-1 text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Admin</div>
+                    <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('users.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-users w-4 text-center text-sm {{ Request::routeIs('users.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="{{ route('roles.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('roles.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-shield-alt w-4 text-center text-sm {{ Request::routeIs('roles.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Roles</span>
+                    </a>
+                    <a href="{{ route('settings.store') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('settings.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-cog w-4 text-center text-sm {{ Request::routeIs('settings.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                    <a href="{{ route('activity.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors no-underline {{ Request::routeIs('activity.*') ? 'bg-[#f5f5f7] text-[#0071e3] font-semibold' : 'text-[#424245] hover:bg-[#f5f5f7] hover:text-[#1d1d1f]' }}">
+                        <i class="fas fa-history w-4 text-center text-sm {{ Request::routeIs('activity.*') ? 'text-[#0071e3]' : 'text-[#86868b]' }}"></i>
+                        <span>Log Aktivitas</span>
+                    </a>
+                @endif
+
+                <div class="px-3 pt-4 pb-1 text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Akun</div>
                 <form action="{{ route('logout') }}" method="POST" class="w-full">
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all">
-                        <i class="fas fa-sign-out-alt w-5 text-center text-lg"></i>
+                    <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-[#d70015] hover:bg-[#fff2f2] transition-colors border-0 bg-transparent text-left cursor-pointer">
+                        <i class="fas fa-sign-out-alt w-4 text-center text-sm"></i>
                         <span>Logout</span>
                     </button>
                 </form>
             </nav>
         </aside>
 
-        <div class="flex-grow flex flex-col min-h-screen">
-            <header class="h-[72px] bg-white border-b border-slate-200 sticky top-0 z-[1040] px-4 md:px-8 flex items-center justify-between gap-4">
+        {{-- Main Area --}}
+        <div class="flex-grow flex flex-col min-h-screen w-full overflow-x-hidden">
+            {{-- Header (Apple Frosted Bar) --}}
+            <header class="h-[64px] bg-white/80 backdrop-blur-md border-b border-[#e5e5ea] sticky top-0 z-[1040] px-4 sm:px-6 flex items-center justify-between gap-4">
                 
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50">
+                {{-- Left: Mobile Burger & Page Title --}}
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-[#d2d2d7] text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors" aria-label="Buka Menu">
                         <i class="fas fa-bars"></i>
                     </button>
 
-                    <div class="hidden md:flex items-center gap-2 text-xs text-slate-400">
-                        <span class="font-semibold text-slate-800 uppercase tracking-wide capitalize">Pages</span>
-                        <span>/</span>
-                        <span class="font-semibold text-slate-800 uppercase tracking-wide capitalize">@yield('title', 'Dashboard')</span>
+                    <div class="flex items-center gap-2 text-xs text-[#86868b]">
+                        <span class="hidden sm:inline">KasirApp</span>
+                        <span class="hidden sm:inline">/</span>
+                        <span class="text-[#1d1d1f] font-semibold text-sm capitalize">@yield('title', 'Dashboard')</span>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 md:gap-6">
-                  <!-- Search Bar Terintegrasi -->
+                {{-- Right: Search & User Dropdown --}}
+                <div class="flex items-center gap-3">
+                    {{-- Global Search --}}
                     <form action="{{ route('search.global') }}" method="GET" class="relative hidden sm:block w-48 md:w-64">
-                        <button type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors">
+                        <button type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-[#0071e3] transition-colors" aria-label="Cari">
                             <i class="fas fa-search text-xs"></i>
                         </button>
                         <input 
@@ -106,76 +442,42 @@
                             name="query" 
                             placeholder="Cari produk atau invoice..." 
                             value="{{ request('query') }}"
-                            class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                            class="w-full pl-8 pr-3 py-1.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-xs font-normal focus:bg-white focus:outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/15 transition-all placeholder:text-[#86868b]"
                         >
                     </form>
 
-                    <div class="relative">
-                        <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 relative" data-bs-toggle="dropdown">
-                            <i class="far fa-bell"></i>
-                            @if(auth()->user()->unreadNotifications->count() > 0)
-                                <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                            @endif
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end p-0 border-0 shadow-xl rounded-2xl mt-2 w-80 overflow-hidden">
-                            <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                                <h6 class="text-sm font-bold text-slate-800 m-0">Notifikasi</h6>
-                                <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">
-                                    {{ auth()->user()->unreadNotifications->count() }} Baru
-                                </span>
-                            </div>
-    
-                            <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
-                                @forelse(auth()->user()->unreadNotifications as $notification)
-                                    <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-3 hover:bg-slate-50 transition-colors no-underline border-b border-slate-50">
-                                        <div class="flex gap-3">
-                                            <div class="flex-shrink-0 w-8 h-8 bg-amber-50 text-amber-500 rounded-lg flex items-center justify-center">
-                                                <i class="{{ $notification->data['icon'] ?? 'fas fa-info-circle' }} text-sm"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-semibold text-slate-800 mb-0.5">{{ $notification->data['title'] }}</p>
-                                                <p class="text-[11px] text-slate-500 leading-tight">{{ $notification->data['pesan'] }}</p>
-                                                <span class="text-[10px] text-slate-400 mt-2 block italic">
-                                                    <i class="far fa-clock me-1"></i>{{ $notification->created_at->diffForHumans() }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                @empty
-                                    <div class="px-4 py-10 text-center">
-                                        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <i class="far fa-bell-slash text-slate-300 text-xl"></i>
-                                        </div>
-                                        <p class="text-xs text-slate-400">Belum ada notifikasi baru</p>
-                                    </div>
-                                @endforelse
-                            </div>
-
-                            @if(auth()->user()->unreadNotifications->count() > 0)
-                                <a href="#" class="block py-2 text-center text-[11px] font-bold text-blue-600 bg-slate-50 hover:bg-blue-100 transition-colors no-underline uppercase tracking-wider">
-                                    Tandai Semua Dibaca
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-
+                    {{-- User Dropdown --}}
                     <div class="dropdown">
-                        <button class="flex items-center gap-3 no-underline" data-bs-toggle="dropdown">
-                            <div class="text-right hidden lg:block">
-                                <p class="text-sm font-semibold text-slate-800 leading-none mb-1">{{ Auth::user()->name }}</p>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-none">{{ Auth::user()->role }}</p>
+                        <button class="flex items-center gap-2.5 p-1 rounded-full hover:bg-[#f5f5f7] transition-colors border-0 bg-transparent cursor-pointer" data-bs-toggle="dropdown" aria-label="Menu Pengguna">
+                            <div class="text-right hidden sm:block">
+                                <p class="text-xs font-semibold text-[#1d1d1f] leading-none mb-0.5">{{ Auth::user()->name }}</p>
+                                <p class="text-[10px] text-[#86868b] capitalize leading-none">{{ Auth::user()->role }}</p>
                             </div>
-                            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-100">
+                            <div class="w-8 h-8 bg-[#1d1d1f] text-white rounded-full flex items-center justify-center font-semibold text-xs">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end p-2 border-0 shadow-xl rounded-2xl mt-2 w-52">
-                            <li><hr class="dropdown-divider border-slate-100"></li>
+                        <ul class="dropdown-menu dropdown-menu-end p-2 border border-[#d2d2d7] shadow-lg rounded-xl mt-1.5 w-48">
+                            <li class="px-3 py-2 border-b border-[#e5e5ea]">
+                                <p class="text-xs font-semibold text-[#1d1d1f] m-0">{{ Auth::user()->name }}</p>
+                                <p class="text-[11px] text-[#86868b] m-0 truncate">{{ Auth::user()->email }}</p>
+                            </li>
+                            <li>
+                                <a href="{{ route('dashboard') }}" class="dropdown-item rounded-lg py-1.5 text-xs text-[#1d1d1f] hover:bg-[#f5f5f7] flex items-center gap-2">
+                                    <i class="fas fa-th-large text-[#86868b] w-4"></i> Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('kasir.index') }}" class="dropdown-item rounded-lg py-1.5 text-xs text-[#1d1d1f] hover:bg-[#f5f5f7] flex items-center gap-2">
+                                    <i class="fas fa-calculator text-[#86868b] w-4"></i> Kasir / POS
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider border-[#e5e5ea] my-1"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="dropdown-item rounded-xl py-2 text-red-500 text-sm w-full text-left">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    <button type="submit" class="dropdown-item rounded-lg py-1.5 text-[#d70015] text-xs hover:bg-[#fff2f2] flex items-center gap-2 w-full text-left">
+                                        <i class="fas fa-sign-out-alt w-4"></i> Logout
                                     </button>
                                 </form>
                             </li>
@@ -184,14 +486,27 @@
                 </div>
             </header>
 
-            <main class="p-4 md:p-8">
+            {{-- Main Content Container --}}
+            <main class="p-4 sm:p-6 lg:p-8 flex-1">
                 @if(session('success'))
-                    <div class="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 rounded-r-xl flex items-center justify-between shadow-sm animate-fade-in">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle"></i>
-                            <span class="text-sm font-medium">{{ session('success') }}</span>
+                    <div class="mb-5 p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-center justify-between text-xs font-medium">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fas fa-check-circle text-emerald-600"></i>
+                            <span>{{ session('success') }}</span>
                         </div>
-                        <button class="text-emerald-500 hover:text-emerald-700" onclick="this.parentElement.remove()">
+                        <button class="text-emerald-600 hover:text-emerald-900 border-0 bg-transparent p-1 cursor-pointer" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="mb-5 p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl flex items-center justify-between text-xs font-medium">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fas fa-exclamation-circle text-rose-600"></i>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                        <button class="text-rose-600 hover:text-rose-900 border-0 bg-transparent p-1 cursor-pointer" onclick="this.parentElement.remove()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -202,6 +517,7 @@
         </div>
     </div>
 
+    <!-- Core Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -222,9 +538,10 @@
             document.body.classList.remove('overflow-hidden');
         }
 
-        // Close mobile sidebar on resize
         window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) closeSidebar();
+            if (window.innerWidth >= 1024) {
+                closeSidebar();
+            }
         });
     </script>
     

@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::latest()->paginate(10); 
-        return view('user.index', compact('users')); 
+        return view('users.index', compact('users')); 
     }
 
     /**
@@ -23,7 +23,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('user.create');
+        return view('users.create');
     }
 
     /**
@@ -35,7 +35,7 @@ class UserController extends Controller
             'name' => 'required|string|min:3|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:3',
-            'role' => 'required|in:admin,staff' // FIX: Ganti 'staff' jadi 'staff'
+            'role' => 'required|in:admin,manager,staff'
         ]);
 
         User::create([
@@ -55,7 +55,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('user.edit', compact('user'));
+        return view('users.edit', compact('user'));
     }
 
     /**
@@ -67,7 +67,7 @@ class UserController extends Controller
             'name' => 'required|string|min:3|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:3',
-            'role' => 'required|in:admin,staff' // FIX: Ganti 'staff' jadi 'staff'
+            'role' => 'required|in:admin,manager,staff'
         ]);
 
         $data = [

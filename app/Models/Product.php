@@ -10,11 +10,19 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
+        'category_id',
+        'kode_produk',
         'nama_produk',
         'harga',
         'stok',
-        'img'
+        'img',
+        'deskripsi'
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     // Accessor untuk URL gambar
     public function getImageUrlAttribute()
